@@ -19,3 +19,4 @@
 /composer.lock
 /public/files/
 /public/sample_data/
+/src/Migrations/

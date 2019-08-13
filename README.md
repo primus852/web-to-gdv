@@ -2,7 +2,7 @@
 
 ## Installation ##
 - `composer install`
-- Set the DB `php bin/console doctrine:migrations:migrate` 
+- Set the DB `php bin/console make:migartion && php bin/console doctrine:migrations:migrate` 
 - Run `php bin/console gdv:crawl`
 - Manually enter the following to `app_areas`:
 
