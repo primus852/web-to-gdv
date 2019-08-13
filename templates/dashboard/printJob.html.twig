@@ -1,0 +1,162 @@
+{% extends 'basePrint.html.twig' %}
+{% block title %}Details::Admin{% endblock %}
+{% block body %}
+
+    <div class="row">
+        <div class="col-12">
+            {% if job.receipt == false %}
+                Auftrag noch nicht quittiert
+            {% else %}
+                {% if job.receiptStatus == 1 %}
+                    <span class="label success">Quittiert am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr</span>
+
+                {% elseif job.finishDate is not empty %}
+                    <span class="label success">Quittiert am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr</span>
+                    <span class="label alert">Abgeschlossens am {{ job.finishDate|date("d.m.Y H:i") }} Uhr</span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Vermittlungsauftrag vom {{ job.createDateTime|date("d.m.Y") }}</h1>
+            <h4>Schadennummer: {{ job.insuranceDamageNo }}</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <h4>Empfänger</h4>
+            <p>
+                {{ job.supplierName }}
+                <br/>
+                {{ job.supplierStreet }}
+                <br/>
+                {{ job.supplierZip }} {{ job.supplierCity }}
+            </p>
+        </div>
+        <div class="col-4">
+            <h4>Sachbearbeiter</h4>
+            <p>
+                {{ job.insuranceContactName }}
+                <br/>
+                Telefon: {{ job.insuranceContactTelephone }}
+                <br/>
+                Fax: {{ job.insuranceContactFax }}
+            </p>
+        </div>
+        <div class="col-4">
+            <h4>Schadenort</h4>
+            <p>
+                {{ job.damageStreet }}
+                <br/>
+                {{ job.damageZip }} {{ job.damageCity }}
+                <br/>
+                &nbsp;
+                <br/>
+                &nbsp;
+            </p>
+        </div>
+        <div class="col-4">
+            <h4>Ansprechpartner</h4>
+            <p>
+                {{ job.clientName }}
+                <br/>
+                {{ job.clientStreet }}
+                <br/>
+                {{ job.clientZip }}
+                <br/>
+                Telefon: {{ job.clientTelephone }}
+            </p>
+        </div>
+        <div class="col-4">
+            <h4>Versicherungsnehmer</h4>
+            <p>
+                {{ job.damageName }}
+                <br/>
+                &nbsp;
+                <br/>
+                &nbsp;
+                <br/>
+                &nbsp;
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <h4>Informationen</h4>
+            <p>
+                <strong>Vertragsnummer:</strong> {{ job.insuranceContractNo }}
+                <br/>
+                <strong>Rahmenvertrag:</strong> {{ job.contract.text }}
+                <br/>
+                <strong>VUNr:</strong> {{ job.insuranceVuNr }}
+                <br/>
+                <strong>Ordnungsnummer:</strong> {{ job.referenceNo }}
+            </p>
+        </div>
+        <div class="col-6">
+            <h4>Schaden</h4>
+            <p>
+                <strong>Erforderlich:</strong> {% for action in job.action %}{{ action.text }} {% endfor %}
+                <br/>
+                <strong>Betroffener Bereich:</strong> {{ job.area.text }}
+                <br/>
+                <strong>Schadentag:</strong> {{ job.insuranceDamageDate|date("d.m.Y") }}
+                <br/>
+                <strong>Gemeldet am:</strong> {{ job.insuranceDamageDateReport|date("d.m.Y") }}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h4>Schadenbeschreibung</h4>
+            <p>
+                {{ job.damageDescription }}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h4>Auftragsbeschreibungbeschreibung</h4>
+            <p>
+                {{ job.damageJob }}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h4>Dateien</h4>
+            <p>
+                {% for file in job.files %}
+                    |
+                    {% if file.reportType == "01" %}
+                        {% set fType = "Foto" %}
+                    {% elseif file.reportType == "02" %}
+                        {% set fType = "Kostenvoranschlag" %}
+                    {% elseif file.reportType == "03" %}
+                        {% set fType = "Rechnung" %}
+                    {% elseif file.reportType == "04" %}
+                        {% set fType = "Gutachten" %}
+                    {% elseif file.reportType == "11" %}
+                        {% set fType = "Abtretungserklärung" %}
+                    {% elseif file.reportType == "32" %}
+                        {% set fType = "Abnahmebestätigung" %}
+                    {% elseif file.reportType == "34" %}
+                        {% set fType = "Arbeitsnachweis" %}
+                    {% elseif file.reportType == "38" %}
+                        {% set fType = "Fremdrechnung" %}
+                    {% elseif file.reportType == "39" %}
+                        {% set fType = "Zwischenbericht" %}
+                    {% elseif file.reportType == "40" %}
+                        {% set fType = "Messprotokoll" %}
+                    {% elseif file.reportType == "98" %}
+                        {% set fType = "Rechnung intern" %}
+                    {% elseif file.reportType == "99" %}
+                        {% set fType = "Sonstiges" %}
+                    {% endif %}
+                    {{ file.filename }} ({{ fType }} / {{ file.uploadDate|date("d.m.Y H:i:s") }}) |
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+{% endblock %}

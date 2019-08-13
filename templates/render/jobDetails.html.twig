@@ -1,0 +1,370 @@
+<div class="header">
+    <div class="row">
+        <div class="col-9">
+            <h2 class="page-title"><a class="icon circle-icon fa fa-remove trigger-message-close"></a>
+                Vermittlungsauftrag vom {{ job.createDateTime|date("d.m.Y") }} | Schadennummer {{ job.insuranceDamageNo }}
+            </h2>
+        </div>
+        <div class="col-3 text-right">
+            {% if job.receipt == false %}
+                <div class="btn-group" role="group" aria-label="BtnGroup">
+                    <a href="#" class="btn btn-sm btn-success js-receipt-job" data-url="{{ path('ajaxCreateReceipt') }}" data-id="{{ job.id }}" data-job="{{ job.insuranceDamageNo }}"><i class="fa fa-check"></i> Quittieren</a>
+                    <a href="{{ path('printJob', {'id': job.id}) }}" class="btn btn-sm btn-warning"><i class="fa fa-print"></i> Drucken</a>
+                </div>
+                <input type="hidden" id="reason_{{ job.id }}" value="NONE"/>
+            {% else %}
+                {% if job.receiptStatus == 1 %}
+                    <span class="badge badge-success">Quittiert am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr</span>
+                {% elseif job.finishDate is not empty %}
+                    <span class="badge badge-success">Quittiert am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr</span>
+                    <span class="badge badge-danger">Abgeschlossen am {{ job.finishDate|date("d.m.Y H:i") }} Uhr</span>
+                {% endif %}
+                <div class="btn-group" role="group" aria-label="BtnGroup">
+                    <a href="{{ path('printJob', {'id': job.id}) }}" class="btn btn-sm btn-warning"><i class="fa fa-print"></i> Drucken</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="messageFly-nano-wrapper nano">
+    <div class="nano-content subScroll">
+        <div class="message-container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="message-box">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Empfänger</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>
+                                                            {{ job.supplierName }}
+                                                            <br/>
+                                                            {{ job.supplierStreet }}
+                                                            <br/>
+                                                            {{ job.supplierZip }} {{ job.supplierCity }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Sachbearbeiter</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>
+                                                            <strong>{{ job.insuranceContactName }}</strong>
+                                                            <br/>
+                                                            Telefon: {{ job.insuranceContactTelephone }}
+                                                            <br/>
+                                                            Fax: {{ job.insuranceContactFax }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Schadenort</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>
+                                                            {{ job.damageStreet }}
+                                                            <br/>
+                                                            {{ job.damageZip }} {{ job.damageCity }}
+                                                            <br/>
+                                                            &nbsp;
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Ansprechpartner</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>
+                                                            {{ job.clientName }}
+                                                            <br/>
+                                                            {{ job.clientStreet }}
+                                                            <br/>
+                                                            {{ job.clientZip }}
+                                                            <br/>
+                                                            Telefon: {{ job.clientTelephone }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Versicherungsnehmer</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>
+                                                            {{ job.damageName }}
+                                                            <br/>
+                                                            &nbsp;
+                                                            <br/>
+                                                            &nbsp;
+                                                            <br/>
+                                                            &nbsp;
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Informationen</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Vertragsnummer</strong></div>
+                                                    <div class="col-6 text-right">{{ job.insuranceContractNo }}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Rahmenvertrag</strong></div>
+                                                    <div class="col-6 text-right">{{ job.contract.text }}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6"><strong>VUNr.</strong></div>
+                                                    <div class="col-6 text-right">{{ job.insuranceVuNr }}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Ordnungsnummer</strong></div>
+                                                    <div class="col-6 text-right">{{ job.referenceNo }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Schaden</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Erforderlich</strong></div>
+                                                    <div class="col-6 text-right">
+                                                        {% for action in job.action %}{{ action.text }} {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Betroffener Bereich</strong></div>
+                                                    <div class="col-6 text-right">{{ job.area.text }}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Schadentag</strong></div>
+                                                    <div class="col-6 text-right">{{ job.insuranceDamageDate|date("d.m.Y") }}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Gemeldet am</strong></div>
+                                                    <div class="col-6 text-right">{{ job.insuranceDamageDateReport|date("d.m.Y") }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Schadenbeschreibung</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>
+                                                            {{ job.damageDescription }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Auftragsbeschreibungbeschreibung</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>
+                                                            {{ job.damageJob }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header text-dark bg-white rounded-0">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6>Dateien</h6>
+                                                    </div>
+                                                    <div class="col-4 text-right">
+                                                        &nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-8"><strong>Datei</strong></div>
+                                                    <div class="col-2"><strong>Typ</strong></div>
+                                                    <div class="col-2"><strong>Datum</strong></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        {% for file in job.files %}
+                                                            <div class="row" style="border-bottom:1px solid #ccc;">
+                                                                {% if file.reportType == "01" %}
+                                                                    {% set fType = "Foto" %}
+                                                                {% elseif file.reportType == "02" %}
+                                                                    {% set fType = "Kostenvoranschlag" %}
+                                                                {% elseif file.reportType == "03" %}
+                                                                    {% set fType = "Rechnung" %}
+                                                                {% elseif file.reportType == "04" %}
+                                                                    {% set fType = "Gutachten" %}
+                                                                {% elseif file.reportType == "11" %}
+                                                                    {% set fType = "Abtretungserklärung" %}
+                                                                {% elseif file.reportType == "32" %}
+                                                                    {% set fType = "Abnahmebestätigung" %}
+                                                                {% elseif file.reportType == "34" %}
+                                                                    {% set fType = "Arbeitsnachweis" %}
+                                                                {% elseif file.reportType == "38" %}
+                                                                    {% set fType = "Fremdrechnung" %}
+                                                                {% elseif file.reportType == "39" %}
+                                                                    {% set fType = "Zwischenbericht" %}
+                                                                {% elseif file.reportType == "40" %}
+                                                                    {% set fType = "Messprotokoll" %}
+                                                                {% elseif file.reportType == "98" %}
+                                                                    {% set fType = "Rechnung intern" %}
+                                                                {% elseif file.reportType == "99" %}
+                                                                    {% set fType = "Sonstiges" %}
+                                                                {% endif %}
+                                                                <div class="col-8"><a target="_blank" href="{{ path('loadFile',{'filename': file.path}) }}">{{ file.filename }}</a></div>
+                                                                <div class="col-2">{{ fType }}</div>
+                                                                <div class="col-2">{{ file.uploadDate|date("d.m.Y H:i:s") }}</div>
+                                                            </div>
+                                                        {% endfor %}
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

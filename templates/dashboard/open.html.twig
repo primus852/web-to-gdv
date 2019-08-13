@@ -1,0 +1,220 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <main id="main">
+        <div class="overlay"></div>
+        <header class="header">
+            <div class="row">
+                <div class="col-6">
+                    <h1 class="page-title">
+                        <a class="sidebar-toggle-btn trigger-toggle-sidebar">
+                            <span class="line"></span>
+                            <span class="line"></span>
+                            <span class="line"></span>
+                            <span class="line line-angle1"></span>
+                            <span class="line line-angle2"></span>
+                        </a>Übersicht
+                    </h1>
+                </div>
+                <div class="col-6">
+                    &nbsp;
+                </div>
+            </div>
+        </header>
+        <div id="main-nano-wrapper" class="nano">
+            <div class="nano-content" id="perfectScroll">
+                <div class="container-fluid">
+                    <div class="row" style="padding-left:15px;">
+                        <div class="col-12">
+                            <h3 class="box-title">Offene Aufträge</h3>
+                            <table class="table table-bordered" id="jobsNew">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        Quelle
+                                    </th>
+                                    <th>
+                                        SchadenNr.
+                                    </th>
+                                    <th>
+                                        Beschreibung
+                                    </th>
+                                    <th>
+                                        Adresse
+                                    </th>
+                                    <th>
+                                        Maßnahmen
+                                    </th>
+                                    <th>
+                                        Berichte
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Bericht
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Anhang
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Rechnung
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Action
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for job in jobs %}
+                                    <tr id="row_{{ job.id }}">
+                                        <td style="text-align: center;">
+                                            {% if job.jobEnter == "manuell" %}
+                                                <span class="badge badge-warning">manuell</span>
+                                            {% else %}
+                                                <span class="badge badge-success">System</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ job.insuranceDamageNo }}
+                                        </td>
+
+                                        <td>
+                                            {{ job.damageDescription }}
+                                        </td>
+                                        <td>
+                                            {{ job.damageStreet }}<br/>{{ job.damageZip }} {{ job.damageCity }}
+                                        </td>
+                                        <td>
+                                            {% for action in job.action %}
+                                                {{ action.text }}
+                                            {% endfor %}
+                                        </td>
+                                        <td style="text-align:center;">
+                                            {% set hasI = false %}
+                                            {% set fileCount = 0 %}
+                                            {% for f in job.files %}
+                                                {% set fileCount = fileCount + 1 %}
+                                                {% if f.filetype == "pdfinvoice" %}
+                                                    {% set hasI = true %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <span class="badge badge-success" id="label_{{ job.id }}">{{ fileCount }}</span>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <div class="dropdown">
+                                                <button class="btn btn-success btn-sm dropdown-toggle js-upload-button" type="button" id="dropZ_{{ job.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    --wählen--
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a class="dropdown-item js-select-file" data-type="01" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Foto</a>
+                                                    <a class="dropdown-item js-select-file" data-type="02" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Kostenvoranschlag</a>
+                                                    <a class="dropdown-item js-select-file" data-type="04" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Gutachten</a>
+                                                    <a class="dropdown-item js-select-file" data-type="11" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Abtretungserklärung</a>
+                                                    <a class="dropdown-item js-select-file" data-type="32" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Abnahmebestätigung</a>
+                                                    <a class="dropdown-item js-select-file" data-type="34" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Arbeitsnachweis</a>
+                                                    <a class="dropdown-item js-select-file" data-type="38" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Fremdrechnung</a>
+                                                    <a class="dropdown-item js-select-file" data-type="39" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Zwischenbericht</a>
+                                                    <a class="dropdown-item js-select-file" data-type="40" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Messprotokoll</a>
+                                                    <a class="dropdown-item js-select-file" data-type="99" data-job="{{ job.id }}" data-form="Rep" data-desc="einen Zwischenbericht" href="#">Sonstiges</a>
+                                                </div>
+                                            </div>
+                                            <form class="uploadFile" style="display:none;" enctype="multipart/form-data" id="invRepForm_{{ job.id }}">
+                                                <input class="inputFile" name="fileName" data-form="Rep" data-job="{{ job.id }}" id="inptRep_{{ job.id }}" type="file" placeholder="Bericht"/>
+                                                <label for="att_{{ job.id }}">Bericht</label>
+                                                <input type="hidden" name="type" value="report"/>
+                                                <input type="hidden" name="reportType" id="repRepType_{{ job.id }}" value=""/>
+                                                <input type="hidden" name="jobId" value="{{ job.id }}"/>
+                                            </form>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            {% if hasI == true %}
+                                                <div class="dropdown">
+                                                    <button class="btn btn-success btn-sm dropdown-toggle js-upload-button" type="button" id="dropA_{{ job.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        --wählen--
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        <a class="dropdown-item js-select-file" data-type="01" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Foto</a>
+                                                        <a class="dropdown-item js-select-file" data-type="02" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Kostenvoranschlag</a>
+                                                        <a class="dropdown-item js-select-file" data-type="04" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Gutachten</a>
+                                                        <a class="dropdown-item js-select-file" data-type="11" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Abtretungserklärung</a>
+                                                        <a class="dropdown-item js-select-file" data-type="32" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Abnahmebestätigung</a>
+                                                        <a class="dropdown-item js-select-file" data-type="34" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Arbeitsnachweis</a>
+                                                        <a class="dropdown-item js-select-file" data-type="38" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Fremdrechnung</a>
+                                                        <a class="dropdown-item js-select-file" data-type="39" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Zwischenbericht</a>
+                                                        <a class="dropdown-item js-select-file" data-type="40" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Messprotokoll</a>
+                                                        <a class="dropdown-item js-select-file" data-type="99" data-job="{{ job.id }}" data-form="Att" data-desc="einen Anhang" href="#">Sonstiges</a>
+                                                    </div>
+                                                </div>
+                                                <form class="uploadFile" style="display:none;" enctype="multipart/form-data" id="invAttForm_{{ job.id }}">
+                                                    <input class="inputFile" name="fileName" data-form="Att" data-job="{{ job.id }}" id="inptAtt_{{ job.id }}" type="file" placeholder="Anhang"/>
+                                                    <label for="att_{{ job.id }}">Anhang</label>
+                                                    <input type="hidden" name="type" value="attachment"/>
+                                                    <input type="hidden" name="reportType" id="repAttType_{{ job.id }}" value=""/>
+                                                    <input type="hidden" name="jobId" value="{{ job.id }}"/>
+                                                </form>
+                                            {% else %}
+                                                keine Rg.
+                                            {% endif %}
+                                        </td>
+                                        <td style="text-align: center;" id="invoiceCol_{{ job.id }}">
+                                            {% set invoiceExcel = false %}
+                                            {% for file in job.files %}
+                                                {% if file.filetype == "pdfinvoice" %}
+                                                    {% set invoiceExcel = true %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <div class="dropdown">
+                                                <button class="btn btn-success btn-sm dropdown-toggle js-upload-button" type="button" id="dropI_{{ job.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    --wählen--
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a class="dropdown-item js-select-file {% if invoiceExcel == true %}disabled{% endif %}" data-form="PDF" data-desc="eine Rechnung" data-job="{{ job.id }}" href="#">PDF</a>
+                                                    <a class="dropdown-item js-select-file {% if invoiceExcel == false %}disabled{% endif %}" data-form="Excel" data-desc="eine Rechnung" data-job="{{ job.id }}" href="#">Excel</a>
+                                                </div>
+                                            </div>
+                                            {% if invoiceExcel == true %}
+                                                <form class="uploadFile" style="display:none;" enctype="multipart/form-data" id="invExcelForm_{{ job.id }}">
+                                                    <input class="inputFile" name="fileName" data-form="Excel" data-job="{{ job.id }}" id="inptExcel_{{ job.id }}" type="file" placeholder="Rechnung"/>
+                                                    <label for="invExcel_{{ job.id }}">Rechnung</label>
+                                                    <input type="hidden" name="type" value="invoice"/>
+                                                    <input type="hidden" name="jobId" value="{{ job.id }}"/>
+                                                </form>
+                                            {% else %}
+                                                <form class="uploadFile" style="display:none;" enctype="multipart/form-data" id="invPDFForm_{{ job.id }}">
+                                                    <input class="inputFile inputPDF buttonAction" name="fileName" data-form="PDF" data-job="{{ job.id }}" id="inptPDF_{{ job.id }}" type="file" placeholder="PDF Rechnung"/>
+                                                    <label for="invPDF_{{ job.id }}">PDF Rg.</label>
+                                                    <input type="hidden" name="type" value="pdfinvoice"/>
+                                                    <input type="hidden" name="jobId" value="{{ job.id }}"/>
+                                                    <input type="hidden" name="reportType" value="03"/>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="#" class="btn btn-info btn-sm clickable"
+                                               data-url="{{ path('jobDetails',{'id':job.id}) }}"
+                                               data-hash="details-auftrag-{{ job.id }}"
+                                               data-trigger="{{ job.id }}"
+                                            ><i class="fa fa-info"></i> Details</a>
+                                        </td>
+                                    </tr>
+
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+        </div>
+    </main>
+{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block javascripts %}
+    <script>
+        var GetNav = "contentOpen";
+    </script>
+{% endblock javascripts %}
+

@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <main id="main">
+        <div class="overlay"></div>
+        <header class="header">
+            <div class="row">
+                <div class="col-6">
+                    <h1 class="page-title">
+                        <a class="sidebar-toggle-btn trigger-toggle-sidebar">
+                            <span class="line"></span>
+                            <span class="line"></span>
+                            <span class="line"></span>
+                            <span class="line line-angle1"></span>
+                            <span class="line line-angle2"></span>
+                        </a>Manueller Auftrag
+                    </h1>
+                </div>
+                <div class="col-6">
+                    &nbsp;
+                </div>
+            </div>
+        </header>
+        <div id="main-nano-wrapper" class="nano">
+            <div class="nano-content" id="perfectScroll">
+                <div class="container-fluid">
+                    <div class="row" style="padding-left:15px;">
+                        <div class="col-12">
+                            <h3 class="box-title">Bitte füllen Sie alle Felder aus</h3>
+                            <div class="row">
+                                <div class="col-3">
+                                    <input placeholder="Ordnungsnummer" id="referenceNo" autocomplete="off" type="text">
+                                </div>
+                                <div class="col-3">
+                                    <input placeholder="Vertragsnummer" id="insuranceContractNo" autocomplete="off" type="text">
+                                </div>
+                                <div class="col-3">
+                                    <input placeholder="Schadennummer" id="insuranceDamageNo" autocomplete="off" type="text">
+                                </div>
+                                <div class="col-3">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input placeholder="VU-Nr." id="insuranceVuNo" autocomplete="off" type="text">
+                                        </div>
+                                        <div class="col-6">
+                                            <select id="insuranceName">
+                                                <option value="NONE">--Versicherung--</option>
+                                                {% for insurance in insurances %}
+                                                    <option value="{{ insurance.id }}">{{ insurance.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row justify-content-center">
+                                <div class="col-2">
+                                    <a href="#" data-url="{{ path('ajaxCreateManual') }}" class="btn btn-sm btn-success js-save-manual"><i class="fa fa-save"></i> Auftrag erfassen</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+        </div>
+    </main>
+{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block javascripts %}
+    <script>
+        var GetNav = "contentManual";
+    </script>
+{% endblock javascripts %}
+

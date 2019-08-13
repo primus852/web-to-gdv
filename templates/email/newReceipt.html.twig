@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <title>eApp::Log</title>
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            -ms-text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        table {
+            border-spacing: 0;
+        }
+
+        table td {
+            border-collapse: collapse;
+        }
+
+        .ExternalClass {
+            width: 100%;
+        }
+
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+
+        .ReadMsgBody {
+            width: 100%;
+            background-color: #ebebeb;
+        }
+
+        table {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        .yshortcuts a {
+            border-bottom: none !important;
+        }
+
+        @media screen and (max-width: 599px) {
+            .force-row,
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .container-padding {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+        }
+
+        .ios-footer a {
+            color: #aaaaaa !important;
+            text-decoration: underline;
+        }
+
+        .Button {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            position: relative;
+            display: inline-block;
+            box-sizing: border-box;
+            min-height: 34px;
+            padding: 6px 12px;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            transition: background-color .25s ease, border-color .25s ease, color .25s ease;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            text-decoration: none;
+            color: #fff;
+            border: 1px solid #434a54;
+            border-radius: 3px;
+            background: #656d78;
+            text-rendering: optimizeSpeed;
+            -webkit-appearance: none;
+            -webkit-font-smoothing: antialiased
+        }
+
+        .Button:hover {
+            border-color: #434a54;
+            background-color: #434a54
+        }
+
+        .Button::-moz-focus-inner {
+            margin: 0;
+            padding: 0
+        }
+
+        .Button:focus {
+            outline: 1px dotted;
+            outline: 3px auto -webkit-focus-ring-color
+        }
+
+        .Button:hover, .Button:focus, .Button:active {
+            text-decoration: none
+        }
+
+        .Button:disabled, .Button.is-disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: .65
+        }
+
+        .Button--small {
+            font-size: 12px;
+            line-height: 18px;
+            min-height: 28px;
+            padding: 4px 8px;
+            border-radius: 2px
+        }
+
+        .Button--large {
+            font-size: 16px;
+            line-height: 22px;
+            min-height: 40px;
+            padding: 8px 16px;
+            border-radius: 4px
+        }
+
+        .Button--primary {
+            color: #fff;
+            border-color: #967adc;
+            background-color: #ac92ec
+        }
+
+        .Button--primary:hover {
+            color: #fff;
+            border-color: #967adc;
+            background-color: #967adc
+        }
+
+        .Button--secondary {
+            color: #fff;
+            border-color: #4a89dc;
+            background-color: #5d9cec
+        }
+
+        .Button--secondary:hover {
+            color: #fff;
+            border-color: #4a89dc;
+            background-color: #4a89dc
+        }
+
+        .Button--outline {
+            color: #434a54;
+            border-color: #434a54;
+            background-color: transparent
+        }
+
+        .Button--outline:hover {
+            color: #fff;
+            border-color: #434a54;
+            background-color: #434a54
+        }
+
+        .Button--link {
+            color: #5d9cec;
+            border-color: transparent;
+            background-color: transparent
+        }
+
+        .Button--link:hover {
+            color: #4a89dc;
+            border-color: transparent;
+            background-color: transparent
+        }
+
+        .Button--success {
+            color: #fff;
+            border-color: #8cc152;
+            background-color: #a0d468
+        }
+
+        .Button--success:hover {
+            color: #fff;
+            border-color: #8cc152;
+            background-color: #8cc152
+        }
+
+        .Button--info {
+            color: #fff;
+            border-color: #3bafda;
+            background-color: #4fc1e9
+        }
+
+        .Button--info:hover {
+            color: #fff;
+            border-color: #3bafda;
+            background-color: #3bafda
+        }
+
+        .Button--warning {
+            color: #fff;
+            border-color: #f6bb42;
+            background-color: #ffce54
+        }
+
+        .Button--warning:hover {
+            color: #fff;
+            border-color: #f6bb42;
+            background-color: #f6bb42
+        }
+
+        .Button--error {
+            color: #fff;
+            border-color: #da4453;
+            background-color: #ed5565
+        }
+
+        .Button--error:hover {
+            color: #fff;
+            border-color: #da4453;
+            background-color: #da4453
+        }
+
+        .ButtonGroup {
+            font-size: 0;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            list-style: none
+        }
+
+        .ButtonGroup + .ButtonGroup {
+            margin-left: 30px
+        }
+
+        .ButtonGroup-item:not(:first-child):not(:last-child) > .Button {
+            border-radius: 0 !important
+        }
+
+        .ButtonGroup-item > .Button {
+            display: block;
+            width: 100%
+        }
+
+        .ButtonGroup-item > .Button:hover, .ButtonGroup-item > .Button:focus, .ButtonGroup-item > .Button:active {
+            z-index: 1
+        }
+
+        .ButtonGroup--horizontal > .ButtonGroup-item {
+            display: inline-block;
+            margin-left: -1px
+        }
+
+        .ButtonGroup--horizontal > .ButtonGroup-item:first-child:not(:only-child) {
+            margin-left: 0
+        }
+
+        .ButtonGroup--horizontal > .ButtonGroup-item:first-child:not(:only-child) > .Button {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important
+        }
+
+        .ButtonGroup--horizontal > .ButtonGroup-item:last-child:not(:only-child) > .Button {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important
+        }
+
+        .ButtonGroup--vertical > .ButtonGroup-item {
+            display: block;
+            margin-top: -1px
+        }
+
+        .ButtonGroup--vertical > .ButtonGroup-item:first-child:not(:only-child) {
+            margin-top: 0
+        }
+
+        .ButtonGroup--vertical > .ButtonGroup-item:first-child:not(:only-child) > .Button {
+            border-bottom-right-radius: 0 !important;
+            border-bottom-left-radius: 0 !important
+        }
+
+        .ButtonGroup--vertical > .ButtonGroup-item:last-child:not(:only-child) > .Button {
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important
+        }
+
+        .ButtonGroup--vertical > .ButtonGroup-item > .Button {
+            text-align: left
+        }
+    </style>
+</head>
+
+<body style="margin:0; padding:0;" bgcolor="#F0F0F0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<!-- 100% background wrapper (grey background) -->
+<table border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" bgcolor="#F0F0F0">
+    <tr>
+        <td align="center" valign="top" bgcolor="#F0F0F0" style="background-color: #F0F0F0;">
+
+            <br>
+
+            <!-- 600px container (white background) -->
+            <table border="0" width="600" cellpadding="0" cellspacing="0" class="container"
+                   style="width:600px;max-width:600px">
+                <tr>
+                    <td class="container-padding header" align="left"
+                        style="font-family:Helvetica, Arial, sans-serif;font-size:24px;font-weight:bold;padding-bottom:12px;color:#DF4726;padding-left:24px;padding-right:24px">
+                        Prüfung abgeschlossen
+                    </td>
+                </tr>
+                <tr>
+                    <td class="container-padding content" align="left"
+                        style="padding-left:24px;padding-right:24px;padding-top:12px;padding-bottom:12px;background-color:#ffffff">
+                        <br>
+
+                        <div class="title"
+                             style="font-family:Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#374550">
+                            Details
+                        </div>
+                        <br>
+
+                        <div class="body-text"
+                             style="font-family:Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;text-align:left;color:#333333">
+                            <table>
+                                <tr>
+                                    <td style="vertical-align: top;">
+                                        Ordnungsnummer
+                                    </td>
+                                    <td style="vertical-align: top;">
+                                        {{ referenceNo }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top;">
+                                        SchadenNr.
+                                    </td>
+                                    <td style="vertical-align: top;">
+                                        <strong>{{ damageNo }}</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top;">
+                                        Ergebnis
+                                    </td>
+                                    <td style="vertical-align: top;">
+                                        {{ resultText|raw }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">&nbsp;</td>
+                                </tr>
+                            </table>
+
+                            <p>Diese eMail wurde generiert am {{ sentAt|date("d.m.Y H:i:s") }}</p>
+
+                            <p><em>– Dies ist eine automatisch generierte eMail, bitte antworten Sie nicht darauf.</em></p>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+            <!--/600px container -->
+
+
+        </td>
+    </tr>
+</table>
+<!--/100% background wrapper-->
+
+</body>
+</html>
