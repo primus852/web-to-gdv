@@ -4,7 +4,7 @@
 - `composer install`
 - Set the DB `php bin/console doctrine:migrations:migrate` 
 - Run `php bin/console gdv:crawl`
-- Manually enter the following to app_areas:
+- Manually enter the following to `app_areas`:
 
 | ID | text | gdv
 |---|---|---|
