@@ -18,6 +18,30 @@ class DashboardController extends AbstractController
 {
 
     /**
+     * @Route("/exp", name="exp")
+     */
+    public function exp(\Swift_Mailer $mailer)
+    {
+
+        $message = (new \Swift_Message('Hello Email'))
+            ->setFrom(getenv('MAILER_ADMIN'))
+            ->setTo(getenv('MAILER_DEFAULT'))
+            ->setBody('TEST')
+        ;
+        $mailer->send($message);
+
+        return $this->render(
+            'security/login.html.twig', array(
+                'error' => array(
+                    'messageKey' => 'TEST',
+                ),
+                'last_username' => 'test'
+            )
+        );
+
+    }
+
+    /**
      * @Route("/", name="home")
      */
     public function home()
