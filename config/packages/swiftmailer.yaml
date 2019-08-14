@@ -1,2 +1,3 @@
 # Swiftmailer Configuration
 swiftmailer:
+  url: '%env(MAILER_URL)%'
