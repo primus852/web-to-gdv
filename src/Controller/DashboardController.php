@@ -28,7 +28,12 @@ class DashboardController extends AbstractController
             ->setTo(getenv('MAILER_DEFAULT'))
             ->setBody('TEST')
         ;
-        $mailer->send($message);
+        try{
+            $mailer->send($message);
+        }catch (\Exception $e){
+            die($e->getMessage());
+        }
+
 
         return $this->render(
             'security/login.html.twig', array(
@@ -52,7 +57,7 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/archiv", name="archive")
      */
     public function archive()
@@ -70,7 +75,7 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/manuelle-eingabe", name="manual")
      */
     public function manual()
@@ -86,7 +91,7 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/offen", name="open")
      */
     public function open()
@@ -104,7 +109,7 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/druck/{id}", name="printJob", defaults={"id"="0"})
      * @param $id
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -130,7 +135,7 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/dashboard", name="dashboard")
      */
     public function dashboard()

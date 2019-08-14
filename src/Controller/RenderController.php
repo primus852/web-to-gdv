@@ -21,7 +21,7 @@ class RenderController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_render/_jobDetails", name="jobDetails")
      * @param Request $request
      * @return Response
@@ -44,7 +44,7 @@ class RenderController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_render/_file/{filename}", name="loadFile", defaults={"filename"="0"})
      * @param string $filename
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse

@@ -24,7 +24,7 @@ class AjaxController extends AbstractController
 {
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_ajax/_createManual", name="ajaxCreateManual")
      * @param Request $request
      * @param ObjectManager $em
@@ -60,7 +60,7 @@ class AjaxController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_ajax/_createReceipt", name="ajaxCreateReceipt")
      * @param Request $request
      * @param ObjectManager $em
@@ -96,7 +96,7 @@ class AjaxController extends AbstractController
     }
 
     /**
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_ajax/_uploadFile", name="ajaxUploadFile")
      * @param Request $request
      * @param ObjectManager $em
