@@ -18,9 +18,9 @@
                 </div>
                 <div class="col-6">
                     {% if uc > 0 %}
-                    <div class="alert alert-danger">
-                        <strong>Hinweis!</strong> Sie haben noch {{ uc }} abgeschlossene Aufträge ohne Prüfbericht.
-                    </div>
+                        <div class="alert alert-danger">
+                            <strong>Hinweis!</strong> Sie haben noch {{ uc }} abgeschlossene Aufträge ohne Prüfbericht.
+                        </div>
                     {% endif %}
                 </div>
             </div>
@@ -31,75 +31,78 @@
                     <div class="row" style="padding-left:15px;">
                         <div class="col-12">
                             <h3 class="box-title">Unquittierte Aufträge</h3>
-                            <table class="table table-bordered" id="jobsNew">
-                                <thead>
-                                <tr>
-                                    <th>
-                                        Quelle
-                                    </th>
-                                    <th>
-                                        SchadenNr.
-                                    </th>
-                                    <th>
-                                        Beschreibung
-                                    </th>
-                                    <th style="min-width:150px;">
-                                        Adresse
-                                    </th>
-                                    <th>
-                                        Maßnahmen
-                                    </th>
-                                    <th>
-                                        Seit
-                                    </th>
-                                    <th style="text-align: center; width:250px;">
-                                        Action
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for job in jobs %}
-                                    <tr id="jobRow_{{ job.id }}">
-                                        <td style="text-align: center;">
-                                            {% if job.jobEnter == "manuell" %}
-                                                <span class="badge badge-warning">manuell</span>
-                                            {% else %}
-                                                <span class="badge badge-success">System</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {{ job.insuranceDamageNo }}
-                                        </td>
-
-                                        <td>
-                                            {{ job.damageDescription }}
-                                        </td>
-                                        <td>
-                                            {{ job.damageStreet }}<br/>{{ job.damageZip }} {{ job.damageCity }}
-                                        </td>
-                                        <td>
-                                            {% for action in job.action %}
-                                                {{ action.text }}
-                                            {% endfor %}
-                                        </td>
-                                        <td>
-                                            {{ job.createDateTime|ago }}
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <div class="btn-group" role="group" aria-label="Action">
-                                                <a href="#" class="btn btn-info btn-sm clickable"
-                                                   data-url="{{ path('jobDetails',{'id':job.id}) }}"
-                                                   data-hash="details-auftrag-{{ job.id }}"
-                                                   data-trigger="{{ job.id }}"
-                                                ><i class="fa fa-info"></i> Details</a>
-                                                <a href="#" class="btn btn-sm btn-success js-receipt-job" data-url="{{ path('ajaxCreateReceipt') }}" data-id="{{ job.id }}" data-job="{{ job.insuranceDamageNo }}"><i class="fa fa-check"></i> Quittieren</a>
-                                            </div>
-                                            <input type="hidden" id="reason_{{ job.id }}" value="NONE" />
-                                        </td>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="jobsNew">
+                                    <thead class="thead-dark">
+                                    <tr>
+                                        <th>
+                                            Quelle
+                                        </th>
+                                        <th>
+                                            SchadenNr.
+                                        </th>
+                                        <th>
+                                            Beschreibung
+                                        </th>
+                                        <th style="min-width:150px;">
+                                            Adresse
+                                        </th>
+                                        <th>
+                                            Maßnahmen
+                                        </th>
+                                        <th>
+                                            Seit
+                                        </th>
+                                        <th style="text-align: center; width:250px;">
+                                            Action
+                                        </th>
                                     </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                    {% for job in jobs %}
+                                        <tr id="jobRow_{{ job.id }}">
+                                            <td style="text-align: center;">
+                                                {% if job.jobEnter == "manuell" %}
+                                                    <span class="badge badge-warning">manuell</span>
+                                                {% else %}
+                                                    <span class="badge badge-success">System</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ job.insuranceDamageNo }}
+                                            </td>
+
+                                            <td>
+                                                {{ job.damageDescription }}
+                                            </td>
+                                            <td>
+                                                {{ job.damageStreet }}<br/>{{ job.damageZip }} {{ job.damageCity }}
+                                            </td>
+                                            <td>
+                                                {% for action in job.action %}
+                                                    {{ action.text }}
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {{ job.createDateTime|ago }}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <div class="btn-group" role="group" aria-label="Action">
+                                                    <a href="#" class="btn btn-info btn-sm clickable"
+                                                       data-url="{{ path('jobDetails',{'id':job.id}) }}"
+                                                       data-hash="details-auftrag-{{ job.id }}"
+                                                       data-trigger="{{ job.id }}"
+                                                    ><i class="fa fa-info"></i> Details</a>
+                                                    <a href="#" class="btn btn-sm btn-success js-receipt-job" data-url="{{ path('ajaxCreateReceipt') }}" data-id="{{ job.id }}" data-job="{{ job.insuranceDamageNo }}"><i class="fa fa-check"></i>
+                                                        Quittieren</a>
+                                                </div>
+                                                <input type="hidden" id="reason_{{ job.id }}" value="NONE"/>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

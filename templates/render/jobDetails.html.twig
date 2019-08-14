@@ -1,33 +1,34 @@
 <div class="header">
     <div class="row">
-        <div class="col-9">
-            <h2 class="page-title"><a class="icon circle-icon fa fa-remove trigger-message-close"></a>
-                Vermittlungsauftrag vom {{ job.createDateTime|date("d.m.Y") }} | Schadennummer {{ job.insuranceDamageNo }}
-            </h2>
+        <div class="col-12 col-md-6">
+            <h1 class="page-title">
+                <a href="#" class="trigger-message-close btn btn-md btn-light border text-danger tt" title="Schließen"><i class="fa fa-remove"></i></a>
+                {{ job.insuranceDamageNo }} <span style="font-size:15px;">({{ job.createDateTime|date("d.m.Y") }})</span>
+            </h1>
         </div>
-        <div class="col-3 text-right">
+        <div class="col-12 col-md-6 text-right">
             {% if job.receipt == false %}
                 <div class="btn-group" role="group" aria-label="BtnGroup">
-                    <a href="#" class="btn btn-sm btn-success js-receipt-job" data-url="{{ path('ajaxCreateReceipt') }}" data-id="{{ job.id }}" data-job="{{ job.insuranceDamageNo }}"><i class="fa fa-check"></i> Quittieren</a>
-                    <a href="{{ path('printJob', {'id': job.id}) }}" class="btn btn-sm btn-warning"><i class="fa fa-print"></i> Drucken</a>
+                    <a href="#" class="btn btn-sm btn-success js-receipt-job tt" data-url="{{ path('ajaxCreateReceipt') }}" data-id="{{ job.id }}" data-job="{{ job.insuranceDamageNo }}" title="Quittieren"><i class="fa fa-check"></i></a>
+                    <a href="{{ path('printJob', {'id': job.id}) }}" class="btn btn-sm btn-warning tt" title="Drucken"><i class="fa fa-print"></i></a>
                 </div>
                 <input type="hidden" id="reason_{{ job.id }}" value="NONE"/>
             {% else %}
                 {% if job.receiptStatus == 1 %}
-                    <span class="badge badge-success">Quittiert am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr</span>
+                    <span class="badge badge-success tt" title="am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr">Quittiert</span>
                 {% elseif job.finishDate is not empty %}
-                    <span class="badge badge-success">Quittiert am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr</span>
-                    <span class="badge badge-danger">Abgeschlossen am {{ job.finishDate|date("d.m.Y H:i") }} Uhr</span>
+                    <span class="badge badge-success tt" title="am {{ job.receiptDate|date("d.m.Y H:i") }} Uhr">Quittiert</span>
+                    <span class="badge badge-danger tt" title=" am {{ job.finishDate|date("d.m.Y H:i") }} Uhr">Abgeschlossen</span>
                 {% endif %}
                 <div class="btn-group" role="group" aria-label="BtnGroup">
-                    <a href="{{ path('printJob', {'id': job.id}) }}" class="btn btn-sm btn-warning"><i class="fa fa-print"></i> Drucken</a>
+                    <a href="{{ path('printJob', {'id': job.id}) }}" class="btn btn-sm btn-warning tt" title="Drucken"><i class="fa fa-print"></i></a>
                 </div>
             {% endif %}
         </div>
     </div>
 </div>
 <div class="messageFly-nano-wrapper nano">
-    <div class="nano-content subScroll">
+    <div class="nano-content subScroll" style="margin-top:25px;">
         <div class="message-container">
             <div class="row">
                 <div class="col-12">
@@ -35,7 +36,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-12 col-md-4" style="padding-bottom:5px;">
                                         <div class="card">
                                             <div class="card-header text-dark bg-white rounded-0">
                                                 <div class="row">
@@ -62,7 +63,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-12 col-md-4" style="padding-bottom:5px;">
                                         <div class="card">
                                             <div class="card-header text-dark bg-white rounded-0">
                                                 <div class="row">
@@ -89,7 +90,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-12 col-md-4" style="padding-bottom:5px;">
                                         <div class="card">
                                             <div class="card-header text-dark bg-white rounded-0">
                                                 <div class="row">
@@ -119,7 +120,7 @@
                                 </div>
                                 <br/>
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6" style="padding-bottom:5px;">
                                         <div class="card">
                                             <div class="card-header text-dark bg-white rounded-0">
                                                 <div class="row">
@@ -148,7 +149,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6" style="padding-bottom:5px;">
                                         <div class="card">
                                             <div class="card-header text-dark bg-white rounded-0">
                                                 <div class="row">
@@ -180,7 +181,7 @@
                                 </div>
                                 <br/>
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6" style="padding-bottom:5px;">
                                         <div class="card">
                                             <div class="card-header text-dark bg-white rounded-0">
                                                 <div class="row">
@@ -212,7 +213,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6" style="padding-bottom:5px;">
                                         <div class="card">
                                             <div class="card-header text-dark bg-white rounded-0">
                                                 <div class="row">
@@ -315,9 +316,9 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-8"><strong>Datei</strong></div>
-                                                    <div class="col-2"><strong>Typ</strong></div>
-                                                    <div class="col-2"><strong>Datum</strong></div>
+                                                    <div class="col-4 col-md-8" style="padding-bottom:5px;"><strong>Datei</strong></div>
+                                                    <div class="col-4 col-md-2" style="padding-bottom:5px;"><strong>Typ</strong></div>
+                                                    <div class="col-4 col-md-2" style="padding-bottom:5px;"><strong>Datum</strong></div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-12">
@@ -348,9 +349,9 @@
                                                                 {% elseif file.reportType == "99" %}
                                                                     {% set fType = "Sonstiges" %}
                                                                 {% endif %}
-                                                                <div class="col-8"><a target="_blank" href="{{ path('loadFile',{'filename': file.path}) }}">{{ file.filename }}</a></div>
-                                                                <div class="col-2">{{ fType }}</div>
-                                                                <div class="col-2">{{ file.uploadDate|date("d.m.Y H:i:s") }}</div>
+                                                                <div class="col-12 col-md-8" style="padding-bottom:5px;"><a target="_blank" href="{{ path('loadFile',{'filename': file.path}) }}">{{ file.filename }}</a></div>
+                                                                <div class="col-12 col-md-2" style="padding-bottom:5px;">{{ fType }}</div>
+                                                                <div class="col-12 col-md-2" style="padding-bottom:5px;">{{ file.uploadDate|date("d.m.Y H:i:s") }}</div>
                                                             </div>
                                                         {% endfor %}
 

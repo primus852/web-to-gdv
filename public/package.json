@@ -21,5 +21,9 @@
     "popper.js": "^1.14.4",
     "tooltipster": "^4.2.6",
     "x0popup": "^0.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/primus852/web-to-gdv.git"
   }
 }

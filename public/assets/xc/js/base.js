@@ -81,7 +81,8 @@ function checkTime(i) {
 function initTooltips(selector) {
     $(selector).tooltipster({
         theme: 'tooltipster-punk',
-        contentAsHTML: true, debug: false
+        contentAsHTML: true,
+        debug: false
     });
 }
 
