@@ -467,11 +467,12 @@ class Gdv
                 ->setTo(getenv('MAILER_DEFAULT'))
                 ->setBody($html, 'text/html');
 
-
-            if ($this->mailer->send($message) > 0) {
-                $job->setEmailSent(true);
-            } else {
-                $job->setEmailsent(false);
+            if ($job !== null) {
+                if ($this->mailer->send($message) > 0) {
+                    $job->setEmailSent(true);
+                } else {
+                    $job->setEmailsent(false);
+                }
             }
 
             $this->em->persist($result);
