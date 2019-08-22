@@ -482,11 +482,11 @@ class Gdv
                 throw new GdvException('MySQL Error: ' . $e->getMessage());
             }
 
+            return true;
+
         } else {
             return false;
         }
-
-        return false;
 
     }
 
