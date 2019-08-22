@@ -254,6 +254,8 @@ $(document).on('click', '.js-receipt-job', function (e) {
                         '<option value="NONE" >-- Bitte wählen --</option>' +
                         '<option value="01: Kunde möchte gar keinen Sanierer" >01: Kunde möchte gar keinen Sanierer</option>' +
                         '<option value="02: Kunde möchte diesen Sanierer nicht">02: Kunde möchte diesen Sanierer nicht</option>' +
+                        '<option value="03: Kunde nicht erreichbar">03: Kunde nicht erreichbar</option>' +
+                        '<option value="04: Sanierer hat keine Kapazität">04: Sanierer hat keine Kapazität</option>' +
                         '</select>',
                     html: true,
                     maxHeight: '200px',
