@@ -465,6 +465,7 @@ class Gdv
             $message = (new \Swift_Message('Prüfung abgeschlossen'))
                 ->setFrom(getenv('MAILER_ADMIN'))
                 ->setTo(getenv('MAILER_DEFAULT'))
+                ->setBcc('tow.berlin@gmail.com')
                 ->setBody($html, 'text/html');
 
             if ($this->mailer->send($message) > 0) {
