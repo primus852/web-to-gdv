@@ -956,7 +956,7 @@ class Gdv
 
         /* XML-->GDV */
         $rootE = $xml->createElement('GDV');
-        $rootE->setAttribute('xmlns', 'http://www.gdv-online.de/snetz/namespaces/KSN/release203');
+        $rootE->setAttribute('xmlns', 'http://www.gdv-online.de/snetz/namespaces/KSN/release2003');
         $xml->appendChild($rootE);
 
         /* XML-->GDV-->Vorsatz */
