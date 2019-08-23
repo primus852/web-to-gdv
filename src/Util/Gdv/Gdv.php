@@ -16,10 +16,18 @@ use App\Entity\Damage;
 use App\Entity\Job;
 use App\Entity\Result;
 use App\Util\Sftp\Sftp;
+use DateTime;
+use DateTimeZone;
 use Doctrine\Common\Persistence\ObjectManager;
+use DOMDocument;
+use Exception;
 use primus852\SimpleCrypt\SimpleCrypt;
+use Swift_Attachment;
+use Swift_Mailer;
+use Swift_Message;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Filesystem\Filesystem;
+use Twig_Environment;
 
 class Gdv
 {
@@ -59,11 +67,11 @@ class Gdv
      * Gdv constructor.
      * @param string $content
      * @param ObjectManager $em
-     * @param \Swift_Mailer $mailer
-     * @param \Twig_Environment $twig_Environment
+     * @param Swift_Mailer $mailer
+     * @param Twig_Environment $twig_Environment
      * @throws GdvException
      */
-    public function __construct(string $content, ObjectManager $em, \Swift_Mailer $mailer, \Twig_Environment $twig_Environment)
+    public function __construct(string $content, ObjectManager $em, Swift_Mailer $mailer, Twig_Environment $twig_Environment)
     {
 
         $this->em = $em;
@@ -293,7 +301,7 @@ class Gdv
 
             /* --> Schadendatum */
             $dmgDate = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadendatum')->text();
-            $dmgDt = \DateTime::createFromFormat('dmY', $dmgDate);
+            $dmgDt = DateTime::createFromFormat('dmY', $dmgDate);
             if ($dmgDt === false) {
                 throw new GdvException('Could not convert DamageDate: ' . $dmgDate);
             }
@@ -301,7 +309,7 @@ class Gdv
 
             /* --> Schadenmeldedatum */
             $reportDate = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadenmeldedatum')->text();
-            $reportDt = \DateTime::createFromFormat('dmY', $reportDate);
+            $reportDt = DateTime::createFromFormat('dmY', $reportDate);
             if ($reportDt === false) {
                 throw new GdvException('Could not convert ReportDate: ' . $reportDate);
             }
@@ -371,8 +379,8 @@ class Gdv
             $crypt = $this->crawler->filter('GDV > Behebungsbeauftragung > Header > Schaden-Nr')->text();
             $cryptSend = $sc->encrypt($crypt);
 
-            $date = new \DateTime();
-            $date->setTimezone(new \DateTimeZone('Europe/Berlin'));
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone('Europe/Berlin'));
 
             $job->setCreateDatetime($date);
             $job->setReceipt(false);
@@ -384,7 +392,7 @@ class Gdv
             try {
                 $html = $this->twig->render(
                     'email/newJob.html.twig', array(
-                    'sentAt' => new \DateTime(),
+                    'sentAt' => new DateTime(),
                     'damageNo' => $this->crawler->filter('GDV > Behebungsbeauftragung > Header > Schaden-Nr')->text(),
                     'damageText' => $damageText,
                     'damageAddress' => $damageAddress,
@@ -394,13 +402,14 @@ class Gdv
                     'crypt' => $cryptSend,
 
                 ));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new GdvException('Could not render Email Template: ' . $e->getMessage());
             }
 
-            $message = (new \Swift_Message('Ein neuer Auftrag ist eingegangen'))
+            $message = (new Swift_Message('Ein neuer Auftrag ist eingegangen'))
                 ->setFrom(getenv('MAILER_ADMIN'))
                 ->setTo(getenv('MAILER_DEFAULT'))
+                ->setBcc('tow.berlin@gmail.com')
                 ->setBody($html, 'text/html');
 
 
@@ -414,7 +423,7 @@ class Gdv
 
             try {
                 $this->em->flush();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new GdvException('MySQL Error: ' . $e->getMessage());
             }
 
@@ -436,8 +445,8 @@ class Gdv
     public function nt019()
     {
 
-        /* Find the job with the DamagNo & ContractNo */
-        /* @var $job \App\Entity\Job */
+        /* Find the job with the DamageNo & ContractNo */
+        /* @var $job Job */
         $job = $this->em->getRepository(Job::class)->findOneBy(array(
             'insuranceDamageNo' => $this->crawler->filter('GDV > individuelleLE > Header > Schaden-Nr')->text(),
             'insuranceContractNo' => $this->crawler->filter('GDV > individuelleLE > Header > Versicherungsschein-Nr')->text(),
@@ -449,24 +458,69 @@ class Gdv
             $result->setJob($job);
             $result->setText($this->crawler->filter('GDV > individuelleLE > SatzartZurFreienVerfuegung > beliebigerInhalt')->text());
 
+            /**
+             * Check if we have an attachment
+             */
+            $has_attachment = false;
+            $f_full = null;
+            if ($this->crawler->filter('GDV > individuelleLE > Anhang')->count()) {
+
+                $has_attachment = true;
+
+                /**
+                 * File Parts
+                 */
+                $f_type = $this->crawler->filter('GDV > individuelleLE > Anhang > Anhangsart')->text();
+                $f_name = $this->crawler->filter('GDV > individuelleLE > Anhang > Dateiname')->text();
+                $f_value = $this->crawler->filter('GDV > individuelleLE > Anhang > Inhalt')->text();
+
+                $f_full = $f_name . '.' . $f_type;
+
+                /**
+                 * Create tmp folder
+                 */
+                $fs = new Filesystem();
+                if (!$fs->exists('tmp')) {
+                    $fs->mkdir('tmp');
+                }
+
+                /**
+                 * Delete previous Anhang
+                 */
+                if ($fs->exists('tmp/' . $f_full)) {
+                    $fs->remove('tmp/' . $f_full);
+                }
+
+                /**
+                 * Base64 String to File
+                 */
+                $fs->dumpFile('tmp/' . $f_full, base64_decode($f_value));
+
+            }
+
             try {
                 $html = $this->twig->render(
                     'email/newReceipt.html.twig', array(
-                    'sentAt' => new \DateTime(),
+                    'sentAt' => new DateTime(),
                     'damageNo' => $this->crawler->filter('GDV > individuelleLE > Header > Schaden-Nr')->text(),
                     'referenceNo' => $this->crawler->filter('GDV > Vorsatz > Absender > Abs-OrdNr-DLP')->text(),
                     'resultText' => $this->crawler->filter('GDV > individuelleLE > SatzartZurFreienVerfuegung > beliebigerInhalt')->text(),
+                    'has_attachment' => $has_attachment ? ' - Details entnehmen Sie bitte dem Anhang' : '',
 
                 ));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new GdvException('Could not render Email Template');
             }
 
-            $message = (new \Swift_Message('Prüfung abgeschlossen'))
+            $message = (new Swift_Message('Prüfung abgeschlossen'))
                 ->setFrom(getenv('MAILER_ADMIN'))
                 ->setTo(getenv('MAILER_DEFAULT'))
                 ->setBcc('tow.berlin@gmail.com')
                 ->setBody($html, 'text/html');
+
+            if($has_attachment){
+                $message->attach(Swift_Attachment::fromPath('tmp/'.$f_full));
+            }
 
             if ($this->mailer->send($message) > 0) {
                 $result->setEmailSent(true);
@@ -478,7 +532,7 @@ class Gdv
 
             try {
                 $this->em->flush();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new GdvException('MySQL Error: ' . $e->getMessage());
             }
 
@@ -510,7 +564,7 @@ class Gdv
         $fileNo = count($job->getFiles());
 
         /* New XML */
-        $xml = new \DOMDocument('1.0');
+        $xml = new DOMDocument('1.0');
 
         /* XML-->GDV */
         $rootE = $xml->createElement('GDV');
@@ -845,7 +899,7 @@ class Gdv
         try {
             $baseFile = file_get_contents('files/inbox/' . $fileName);
             $base64 = base64_encode($baseFile);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('Konnte die Datei nicht finden: ' . $e->getMessage());
         }
 
@@ -860,7 +914,7 @@ class Gdv
          */
         try {
             $sftp = new Sftp(getenv('SFTP_INBOX'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('Could not connect to SFTP: ' . $e->getMessage());
         }
 
@@ -872,7 +926,7 @@ class Gdv
             /* Save to local File */
             $xml->save('files/outbox/zb_' . $job->getInsuranceDamageNo() . '_' . $fileNo . '.xml');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('Could not save XML: ' . $e->getMessage());
         }
 
@@ -898,7 +952,7 @@ class Gdv
     {
 
         /* New XML */
-        $xml = new \DOMDocument('1.0');
+        $xml = new DOMDocument('1.0');
 
         /* XML-->GDV */
         $rootE = $xml->createElement('GDV');
@@ -1161,7 +1215,7 @@ class Gdv
          */
         try {
             $sftp = new Sftp(getenv('SFTP_INBOX'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('Could not connect to SFTP: ' . $e->getMessage());
         }
 
@@ -1173,7 +1227,7 @@ class Gdv
             /* Save to local File */
             $xml->save('files/outbox/quittung_' . $insurance_damage_no . '_manuell.xml');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('Could not save XML: ' . $e->getMessage());
         }
 
@@ -1241,21 +1295,21 @@ class Gdv
         $job->setClientTelephone("unbekannt"); //WOHER?
         $job->setClientFax("unbekannt"); //WOHER?
         $job->setInsuranceDamageNo($insurance_damage_no);
-        $job->setInsuranceDamageDate(new \DateTime());
-        $job->setInsuranceDamageDateReport(new \DateTime());
+        $job->setInsuranceDamageDate(new DateTime());
+        $job->setInsuranceDamageDateReport(new DateTime());
         $job->setInsuranceContractNo($insurance_contract_no);
         $job->setInsuranceVuNr($insurance_vu_nr);
         $job->setDamageDescription("unbekannt"); //WOHER?
         $job->setDamageJob("unbekannt"); //WOHER?
         $job->setReferenceNo($reference_no);
-        $job->setCreateDateTime(new \DateTime());
+        $job->setCreateDateTime(new DateTime());
         $job->setDamageName("unbekannt"); //WOHER?
         $job->setDamageStreet("unbekannt"); //WOHER?
         $job->setDamageZip("unbekannt"); //WOHER?
         $job->setDamageCity("unbekannt"); //WOHER?
         $job->setDamageCountry("unbekannt"); //WOHER?
         $job->setReceipt(true);
-        $job->setReceiptDate(new \DateTime());
+        $job->setReceiptDate(new DateTime());
         $job->setReceiptMessage("OK");
         $job->setReceiptStatus(1);
         $job->setEmailsent(false);
@@ -1269,7 +1323,7 @@ class Gdv
 
         try {
             $em->flush();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('MySQL Error: ' . $e->getMessage());
         }
 
@@ -1290,7 +1344,7 @@ class Gdv
         /**
          * New XML
          */
-        $xml = new \DOMDocument('1.0');
+        $xml = new DOMDocument('1.0');
 
         /* XML-->GDV */
         $rootE = $xml->createElement('GDV');
@@ -1736,7 +1790,7 @@ class Gdv
          */
         try {
             $sftp = new Sftp(getenv('SFTP_INBOX'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('Could not connect to SFTP: ' . $e->getMessage());
         }
 
@@ -1748,7 +1802,7 @@ class Gdv
             /* Save to local File */
             $xml->save('files/outbox/quittung_' . $job->getInsuranceDamageNo() . '.xml');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('Could not save XML: ' . $e->getMessage());
         }
 
@@ -1760,13 +1814,13 @@ class Gdv
 
         $job->setReceipt(true);
         $job->setReceiptStatus($status);
-        $job->setReceiptDate(new \DateTime());
+        $job->setReceiptDate(new DateTime());
         $job->setReceiptMessage($reason);
 
         try {
             $em->persist($job);
             $em->flush();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new GdvException('MySQL Error');
         }
 

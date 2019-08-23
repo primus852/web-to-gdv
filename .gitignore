@@ -20,3 +20,5 @@
 /public/files/
 /public/sample_data/
 /src/Migrations/
+/test.xml
+/public/tmp/

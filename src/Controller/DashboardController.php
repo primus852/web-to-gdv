@@ -10,12 +10,27 @@ use Doctrine\Common\Persistence\ObjectManager;
 use primus852\ShortResponse\ShortResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
 
 class DashboardController extends AbstractController
 {
+
+
+    /**
+     * @Security("is_granted('ROLE_USER')")
+     * @Route("/admin/exp", name="exp")
+     */
+    public function exp()
+    {
+
+        die();
+
+
+    }
 
     /**
      * @Route("/", name="home")
