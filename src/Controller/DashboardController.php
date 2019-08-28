@@ -49,9 +49,7 @@ class DashboardController extends AbstractController
     public function archive()
     {
         /* Get Job */
-        $jobs = $this->getDoctrine()->getRepository(Job::class)->findBy(array(
-            'receiptStatus' => 2
-        ));
+        $jobs = $this->getDoctrine()->getRepository(Job::class)->findAll();
 
         return $this->render(
             'dashboard/archive.html.twig', array(
