@@ -1288,7 +1288,7 @@ class Gdv
         $job->setSupplierStreet("unbekannt"); //WOHER?
         $job->setClientName("unbekannt"); //WOHER?
         $job->setClientCountry("D"); //WOHER?
-        $job->setClientZip("unbekannt"); //WOHER?
+        $job->setClientZip("00000"); //WOHER?
         $job->setClientCity("unbekannt"); //WOHER?
         $job->setClientStreet("unbekannt"); //WOHER?
         $job->setClientMobile("unbekannt"); //WOHER?
