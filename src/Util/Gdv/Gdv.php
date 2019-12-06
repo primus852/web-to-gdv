@@ -71,7 +71,7 @@ class Gdv
      * @param Twig_Environment $twig_Environment
      * @throws GdvException
      */
-    public function __construct(string $content, ObjectManager $em, Swift_Mailer $mailer, Twig_Environment $twig_Environment)
+    public function __construct(string $content, \Doctrine\Common\Persistence\ManagerRegistry $em, Swift_Mailer $mailer, Twig_Environment $twig_Environment)
     {
 
         $this->em = $em;

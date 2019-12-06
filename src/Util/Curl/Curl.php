@@ -37,7 +37,7 @@ class Curl
      * @throws CurlException
      * @throws GuzzleException
      */
-    public function __construct(int $type_no, int $length, string $class_name, ObjectManager $em)
+    public function __construct(int $type_no, int $length, string $class_name, \Doctrine\Common\Persistence\ManagerRegistry $em)
     {
 
         $this->client = new Client();
