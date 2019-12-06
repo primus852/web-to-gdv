@@ -137,7 +137,6 @@ class Gdv
             $contactName = null;
             $contactNumber = null;
             foreach ($this->crawler->filter('GDV > Behebungsbeauftragung > PartnerdatenBlock') as $node) {
-            dump($node);
 
 				if(empty($node) || $node === null){
 					continue;
@@ -152,6 +151,8 @@ class Gdv
                 $newNode->filter('Partnerdaten > Adresse > Strasse')->count() ? $partner[$x]['street'] = $newNode->filter('Partnerdaten > Adresse > Strasse')->text() : $partner[$x]['street'] = null;
                 $y = 0;
                 foreach ($newNode->filter('Kommunikation') as $comm) {
+
+                	dump($comm);
 
                 	if(empty($comm) || $comm === null){
                 		continue;
