@@ -18,7 +18,7 @@ use App\Entity\Result;
 use App\Util\Sftp\Sftp;
 use DateTime;
 use DateTimeZone;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use DOMDocument;
 use Exception;
 use primus852\SimpleCrypt\SimpleCrypt;

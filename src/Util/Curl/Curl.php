@@ -13,7 +13,7 @@ use App\Entity\Action;
 use App\Entity\Contract;
 use App\Entity\Damage;
 use App\Entity\MessageType;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;

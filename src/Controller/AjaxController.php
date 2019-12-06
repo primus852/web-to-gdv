@@ -10,7 +10,7 @@ use App\Util\Converter\ConverterException;
 use App\Util\Gdv\Gdv;
 use App\Util\Gdv\GdvException;
 use DateTime;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use primus852\ShortResponse\ShortResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -27,10 +27,10 @@ class AjaxController extends AbstractController
      * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_ajax/_createManual", name="ajaxCreateManual")
      * @param Request $request
-     * @param ObjectManager $em
+     * @param ManagerRegistry $em
      * @return JsonResponse
      */
-    public function createManual(Request $request, ObjectManager $em)
+    public function createManual(Request $request, \Doctrine\Common\Persistence\ManagerRegistry $em)
     {
 
         /**
@@ -63,10 +63,10 @@ class AjaxController extends AbstractController
      * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_ajax/_createReceipt", name="ajaxCreateReceipt")
      * @param Request $request
-     * @param ObjectManager $em
+     * @param ManagerRegistry $em
      * @return JsonResponse
      */
-    public function createReceipt(Request $request, ObjectManager $em)
+    public function createReceipt(Request $request, \Doctrine\Common\Persistence\ManagerRegistry $em)
     {
 
         if($request->get('id') === '' || $request->get('id') === null){
@@ -99,11 +99,11 @@ class AjaxController extends AbstractController
      * @Security("is_granted('ROLE_USER')")
      * @Route("/admin/_ajax/_uploadFile", name="ajaxUploadFile")
      * @param Request $request
-     * @param ObjectManager $em
+     * @param ManagerRegistry $em
      * @return JsonResponse
      * @throws Exception
      */
-    public function uploadFile(Request $request, ObjectManager $em)
+    public function uploadFile(Request $request, \Doctrine\Common\Persistence\ManagerRegistry $em)
     {
 
         $file = $request->files->get('fileName');

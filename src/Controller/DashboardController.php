@@ -6,7 +6,7 @@ use App\Entity\Insurance;
 use App\Entity\Job;
 use App\Util\Gdv\Gdv;
 use App\Util\Gdv\GdvException;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use primus852\ShortResponse\ShortResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

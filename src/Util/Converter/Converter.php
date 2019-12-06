@@ -12,7 +12,7 @@ namespace App\Util\Converter;
 use App\Entity\File;
 use App\Entity\Job;
 use App\Util\Sftp\Sftp;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 
