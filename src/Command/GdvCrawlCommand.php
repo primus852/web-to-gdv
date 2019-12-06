@@ -20,7 +20,7 @@ class GdvCrawlCommand extends Command
     protected static $defaultName = 'gdv:crawl';
     private $em;
 
-    public function __construct(EntityManagerInterface $em, ?string $name = null)
+    public function __construct(\Doctrine\Common\Persistence\ManagerRegistry $em, ?string $name = null)
     {
         parent::__construct($name);
 

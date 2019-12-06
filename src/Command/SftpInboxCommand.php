@@ -28,7 +28,7 @@ class SftpInboxCommand extends Command
      * @param \Twig_Environment $twig
      * @param null|string $name
      */
-    public function __construct(EntityManagerInterface $em, \Swift_Mailer $mailer, \Twig_Environment $twig, ?string $name = null)
+    public function __construct(\Doctrine\Common\Persistence\ManagerRegistry $em, \Swift_Mailer $mailer, \Twig_Environment $twig, ?string $name = null)
     {
         parent::__construct($name);
 
