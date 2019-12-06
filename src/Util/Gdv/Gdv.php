@@ -83,7 +83,6 @@ class Gdv
 
         if ($this->crawler->filter('GDV > Behebungsbeauftragung > PartnerdatenBlock > Partnerdaten > Adresse > Name1')->count()) {
             try {
-            dump('nt028');
                 return self::nt028();
             } catch (GdvException $e) {
                 throw new GdvException($e->getMessage() . ' (nt028)');
@@ -93,7 +92,6 @@ class Gdv
 
         if ($this->crawler->filter('GDV > individuelleLE > Header > Schaden-Nr')->count()) {
             try {
-            dump('nt019');
                 return self::nt019();
             } catch (GdvException $e) {
                 throw new GdvException($e->getMessage() . ' (nt019)');
@@ -139,6 +137,7 @@ class Gdv
             $contactName = null;
             $contactNumber = null;
             foreach ($this->crawler->filter('GDV > Behebungsbeauftragung > PartnerdatenBlock') as $node) {
+            dump($node);
 
 				if(empty($node) || $node === null){
 					continue;
