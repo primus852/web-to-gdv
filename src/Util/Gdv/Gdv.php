@@ -152,6 +152,7 @@ class Gdv
                 $y = 0;
                 foreach ($newNode->filter('Kommunikation') as $comm) {
 
+					dump($comm);die;
                 	if(!$comm->count()){
                 		dump('isEmpty');
                 		continue;
