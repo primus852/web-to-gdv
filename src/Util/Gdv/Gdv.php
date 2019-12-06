@@ -138,6 +138,9 @@ class Gdv
             $contactNumber = null;
             foreach ($this->crawler->filter('GDV > Behebungsbeauftragung > PartnerdatenBlock') as $node) {
 
+				if(empty($node) || $node === null){
+					continue;
+				}
                 $newNode = new Crawler($node);
                 $newNode->filter('Partnerdaten > Adresse > Name1')->count() ? $partner[$x]['name'] = $newNode->filter('Partnerdaten > Adresse > Name1')->text() : $partner[$x]['name'] = null;
                 $newNode->filter('Partnerdaten > Adresse > Name2')->count() ? $partner[$x]['name'] .= ' ' . $newNode->filter('Partnerdaten > Adresse > Name2')->text() : $partner[$x]['name'] .= null;
@@ -148,6 +151,11 @@ class Gdv
                 $newNode->filter('Partnerdaten > Adresse > Strasse')->count() ? $partner[$x]['street'] = $newNode->filter('Partnerdaten > Adresse > Strasse')->text() : $partner[$x]['street'] = null;
                 $y = 0;
                 foreach ($newNode->filter('Kommunikation') as $comm) {
+
+                	if(empty($comm) || $comm === null){
+                		continue;
+                	}
+
                     $commNode = new Crawler($comm);
                     $commNode->filter('Typ')->count() ? $partner[$x]['communication'][$y]['type'] = $newNode->filter('Typ')->text() : $partner[$x]['communication'][$y]['type'] = "0";
                     $commNode->filter('Nummer')->count() ? $partner[$x]['communication'][$y]['number'] = $newNode->filter('Nummer')->text() : $partner[$x]['communication'][$y]['number'] = "Keine";
@@ -172,6 +180,11 @@ class Gdv
 
                     $dd = 1;
                     foreach ($newNode->filter('Schadenhergang') as $dmgDesc) {
+
+                    	if(empty($dmgDesc) || $dmgDesc === null){
+							continue;
+                        }
+
                         $dmgNode = new Crawler($dmgDesc);
                         $dmgNode->filter('Schilderung' . $dd)->count() ? $infos['damage_description'][$dd] = $newNode->filter('Schilderung' . $dd)->text() : $infos['damage_description'][$dd] = null;
                         $dmgNode->filter('Schilderung' . $dd)->count() ? $damageText .= $newNode->filter('Schilderung' . $dd)->text() : $damageText .= null;
@@ -340,6 +353,11 @@ class Gdv
             $aa = 1;
             $actionText = null;
             foreach ($this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragstypen')->children() as $actionType) {
+
+            	if(empty($actionType) || $actionType === null){
+            		continue;
+				}
+
                 $actionNode = new Crawler($actionType);
                 if ($actionNode->filter('Auftragsart' . $aa)->count()) {
 
