@@ -99,7 +99,7 @@
             <p>
                 <strong>Erforderlich:</strong> {% for action in job.action %}{{ action.text }} {% endfor %}
                 <br/>
-                <strong>Betroffener Bereich:</strong> {{ job.area.text }}
+                <strong>Betroffener Bereich:</strong> {%  if job.area is not null %}{{ job.area.text }}{% else %}nicht angegeben{% endif %}
                 <br/>
                 <strong>Schadentag:</strong> {{ job.insuranceDamageDate|date("d.m.Y") }}
                 <br/>

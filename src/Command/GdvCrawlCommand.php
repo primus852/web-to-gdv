@@ -7,7 +7,7 @@ use App\Entity\Contract;
 use App\Entity\Damage;
 use App\Entity\MessageType;
 use App\Util\Curl\Curl;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManagerInterface as ObjectManager;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\Console\Command\Command;
@@ -20,7 +20,7 @@ class GdvCrawlCommand extends Command
     protected static $defaultName = 'gdv:crawl';
     private $em;
 
-    public function __construct(\Doctrine\Common\Persistence\ManagerRegistry $em, ?string $name = null)
+    public function __construct(ObjectManager $em, ?string $name = null)
     {
         parent::__construct($name);
 

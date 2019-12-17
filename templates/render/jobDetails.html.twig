@@ -243,7 +243,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-6"><strong>Betroffener Bereich</strong></div>
-                                                    <div class="col-6 text-right">{{ job.area.text }}</div>
+                                                    <div class="col-6 text-right">{%  if job.area is not null %}{{ job.area.text }}{% else %}nicht angegeben{% endif %}</div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-6"><strong>Schadentag</strong></div>

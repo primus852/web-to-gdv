@@ -8,12 +8,7 @@
 
 namespace App\Util\Curl;
 
-
-use App\Entity\Action;
-use App\Entity\Contract;
-use App\Entity\Damage;
-use App\Entity\MessageType;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManagerInterface as ObjectManager;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -37,7 +32,7 @@ class Curl
      * @throws CurlException
      * @throws GuzzleException
      */
-    public function __construct(int $type_no, int $length, string $class_name, \Doctrine\Common\Persistence\ManagerRegistry $em)
+    public function __construct(int $type_no, int $length, string $class_name, ObjectManager $em)
     {
 
         $this->client = new Client();

@@ -11,6 +11,8 @@ namespace App\Util\Sftp;
 use App\Util\Gdv\GdvException;
 use phpseclib\Net\SFTP as Connection;
 use primus852\SimpleCrypt\SimpleCrypt;
+use SplFileInfo;
+use Symfony\Component\Finder\Finder;
 
 class Sftp
 {
@@ -20,6 +22,7 @@ class Sftp
     private $username;
     private $password;
     private $folder;
+    private $local;
 
     /* @var $sftp Connection */
     private $sftp;
@@ -30,17 +33,21 @@ class Sftp
      * @param string|null $server
      * @param string|null $username
      * @param string|null $enc_password
+     * @param bool $local
      * @throws SftpException
      */
-    public function __construct(string $folder = null, string $server = null, string $username = null, string $enc_password = null)
+    public function __construct(string $folder = null, string $server = null, string $username = null, string $enc_password = null, bool $local = false)
     {
 
         $this->server = $server !== null ? $server : getenv('SFTP_HOST');
         $this->username = $username !== null ? $username : getenv('SFTP_USER');
         $this->password = $enc_password !== null ? SimpleCrypt::dec($enc_password, 'brasa', 'tw') : getenv('SFTP_PASS');
         $this->folder = $folder !== null ? $folder : getenv('SFTP_OUTBOX');
+        $this->local = $local;
 
-        $this->login();
+        if (!$this->local) {
+            $this->login();
+        }
 
     }
 
@@ -114,13 +121,34 @@ class Sftp
 
         $files = array();
 
-        $list = $this->sftp->nlist();
-        if (!empty($list)) {
-            foreach ($list as $file) {
-                if ($file !== '.' && $file !== '..') {
+
+        if (!$this->local) {
+
+            /**
+             * Get Files from SFTP
+             */
+            $list = $this->sftp->nlist();
+            if (!empty($list)) {
+                foreach ($list as $file) {
+                    if ($file !== '.' && $file !== '..') {
+                        $files[] = $file;
+                    }
+                }
+            }
+        } else {
+
+            /**
+             * Get all local Files
+             */
+            $finder = new Finder();
+            $finder->files()->in(__DIR__.'/../../../public/debug');
+
+            if ($finder->hasResults()) {
+                foreach($finder as $file){
                     $files[] = $file;
                 }
             }
+
         }
 
         return $files;
@@ -133,16 +161,16 @@ class Sftp
      */
     public function delete(string $file)
     {
-        return $this->sftp->delete($file);
+        return $this->local ? null : $this->sftp->delete($file);
     }
 
     /**
-     * @param string $file
+     * @param string|SplFileInfo $file
      * @return mixed
      */
-    public function content(string $file)
+    public function content($file)
     {
-        return $this->sftp->get($file);
+        return $this->local ? file_get_contents($file->getRealPath()) : $this->sftp->get($file);
     }
 
     public function __destruct()

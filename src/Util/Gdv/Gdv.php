@@ -18,7 +18,7 @@ use App\Entity\Result;
 use App\Util\Sftp\Sftp;
 use DateTime;
 use DateTimeZone;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManagerInterface as ObjectManager;
 use DOMDocument;
 use Exception;
 use primus852\SimpleCrypt\SimpleCrypt;
@@ -27,7 +27,7 @@ use Swift_Mailer;
 use Swift_Message;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Filesystem\Filesystem;
-use Twig_Environment;
+use Twig\Environment;
 
 class Gdv
 {
@@ -68,10 +68,10 @@ class Gdv
      * @param string $content
      * @param ObjectManager $em
      * @param Swift_Mailer $mailer
-     * @param Twig_Environment $twig_Environment
+     * @param Environment $twig_Environment
      * @throws GdvException
      */
-    public function __construct(string $content, \Doctrine\Common\Persistence\ManagerRegistry $em, Swift_Mailer $mailer, Twig_Environment $twig_Environment)
+    public function __construct(string $content, ObjectManager $em, Swift_Mailer $mailer, Environment $twig_Environment)
     {
 
         $this->em = $em;
@@ -110,6 +110,12 @@ class Gdv
     public function nt028()
     {
 
+        /**
+         * Set a Default Date/Texts for empty but required Fields
+         */
+        $defaultDate = new DateTime();
+        $defaultText = 'nicht angegeben';
+
         $refNo = $this->crawler->filter('GDV > Vorsatz > Absender > Abs-OrdNr-DLP')->text();
 
         $jobs = $this->em->getRepository(Job::class)->findOneBy(array(
@@ -138,30 +144,40 @@ class Gdv
             $contactNumber = null;
             foreach ($this->crawler->filter('GDV > Behebungsbeauftragung > PartnerdatenBlock') as $node) {
 
-				if(empty($node) || $node === null){
-					continue;
-				}
-                $newNode = new Crawler($node);
-                $newNode->filter('Partnerdaten > Adresse > Name1')->count() ? $partner[$x]['name'] = $newNode->filter('Partnerdaten > Adresse > Name1')->text() : $partner[$x]['name'] = null;
-                $newNode->filter('Partnerdaten > Adresse > Name2')->count() ? $partner[$x]['name'] .= ' ' . $newNode->filter('Partnerdaten > Adresse > Name2')->text() : $partner[$x]['name'] .= null;
-                $newNode->filter('Partnerdaten > Adresse > Name3')->count() ? $partner[$x]['name'] .= ' ' . $newNode->filter('Partnerdaten > Adresse > Name3')->text() : $partner[$x]['name'] .= null;
-                $newNode->filter('Partnerdaten > Adresse > LKZ')->count() ? $partner[$x]['country'] = $newNode->filter('Partnerdaten > Adresse > LKZ')->text() : $partner[$x]['country'] = null;
-                $newNode->filter('Partnerdaten > Adresse > PLZ')->count() ? $partner[$x]['zip'] = $newNode->filter('Partnerdaten > Adresse > PLZ')->text() : $partner[$x]['zip'] = null;
-                $newNode->filter('Partnerdaten > Adresse > Ort')->count() ? $partner[$x]['city'] = $newNode->filter('Partnerdaten > Adresse > Ort')->text() : $partner[$x]['city'] = null;
-                $newNode->filter('Partnerdaten > Adresse > Strasse')->count() ? $partner[$x]['street'] = $newNode->filter('Partnerdaten > Adresse > Strasse')->text() : $partner[$x]['street'] = null;
+                if (empty($node) || $node === null) {
+                    continue;
+                }
+
+                try {
+                    $newNode = new Crawler($node);
+                } catch (Exception $e) {
+                    throw new GdvException('Node is empty [GDV > Behebungsbeauftragung > PartnerdatenBlock]');
+                }
+
+                $newNode->filter('Partnerdaten > Adresse > Name1')->count() > 0 ? $partner[$x]['name'] = $newNode->filter('Partnerdaten > Adresse > Name1')->text() : $partner[$x]['name'] = null;
+                $newNode->filter('Partnerdaten > Adresse > Name2')->count() > 0 ? $partner[$x]['name'] .= ' ' . $newNode->filter('Partnerdaten > Adresse > Name2')->text() : $partner[$x]['name'] .= null;
+                $newNode->filter('Partnerdaten > Adresse > Name3')->count() > 0 ? $partner[$x]['name'] .= ' ' . $newNode->filter('Partnerdaten > Adresse > Name3')->text() : $partner[$x]['name'] .= null;
+                $newNode->filter('Partnerdaten > Adresse > LKZ')->count() > 0 ? $partner[$x]['country'] = $newNode->filter('Partnerdaten > Adresse > LKZ')->text() : $partner[$x]['country'] = null;
+                $newNode->filter('Partnerdaten > Adresse > PLZ')->count() > 0 ? $partner[$x]['zip'] = $newNode->filter('Partnerdaten > Adresse > PLZ')->text() : $partner[$x]['zip'] = null;
+                $newNode->filter('Partnerdaten > Adresse > Ort')->count() > 0 ? $partner[$x]['city'] = $newNode->filter('Partnerdaten > Adresse > Ort')->text() : $partner[$x]['city'] = null;
+                $newNode->filter('Partnerdaten > Adresse > Strasse')->count() > 0 ? $partner[$x]['street'] = $newNode->filter('Partnerdaten > Adresse > Strasse')->text() : $partner[$x]['street'] = null;
                 $y = 0;
                 foreach ($newNode->filter('Kommunikation') as $comm) {
 
-                	if(empty($comm) || $comm === null){
-                		continue;
-                	}
+                    if (empty($comm) || $comm === null) {
+                        continue;
+                    }
 
-                    $commNode = new Crawler($comm);
-                    $commNode->filter('Typ')->count() ? $partner[$x]['communication'][$y]['type'] = $newNode->filter('Typ')->text() : $partner[$x]['communication'][$y]['type'] = "0";
-                    $commNode->filter('Nummer')->count() ? $partner[$x]['communication'][$y]['number'] = $newNode->filter('Nummer')->text() : $partner[$x]['communication'][$y]['number'] = "Keine";
+                    try {
+                        $commNode = new Crawler($comm);
+                    } catch (Exception $e) {
+                        throw new GdvException('Node is empty [GDV > Behebungsbeauftragung > PartnerdatenBlock > Kommunikation]');
+                    }
+                    $commNode->filter('Typ')->count() > 0 ? $partner[$x]['communication'][$y]['type'] = $newNode->filter('Typ')->text() : $partner[$x]['communication'][$y]['type'] = "0";
+                    $commNode->filter('Nummer')->count() > 0 ? $partner[$x]['communication'][$y]['number'] = $newNode->filter('Nummer')->text() : $partner[$x]['communication'][$y]['number'] = "Keine";
                     //EINE NUMMER AUSREICHEND????
-                    //$commNode->filter('KOMM-TYP2')->count() ? $partner[$x]['communication'][$y]['type2'] = $newNode->filter('KOMM-TYP2')->text() : $partner[$x]['communication'][$y]['type2'] = null;
-                    //$commNode->filter('KOMM-NR2')->count() ? $partner[$x]['communication'][$y]['number2'] = $newNode->filter('KOMM-NR2')->text() : $partner[$x]['communication'][$y]['number2'] = null;
+                    //$commNode->filter('KOMM-TYP2')-> count() > 0 ? $partner[$x]['communication'][$y]['type2'] = $newNode->filter('KOMM-TYP2')->text() : $partner[$x]['communication'][$y]['type2'] = null;
+                    //$commNode->filter('KOMM-NR2')-> count() > 0 ? $partner[$x]['communication'][$y]['number2'] = $newNode->filter('KOMM-NR2')->text() : $partner[$x]['communication'][$y]['number2'] = null;
                     $y++;
                 }
 
@@ -181,13 +197,17 @@ class Gdv
                     $dd = 1;
                     foreach ($newNode->filter('Schadenhergang') as $dmgDesc) {
 
-                    	if(empty($dmgDesc) || $dmgDesc === null){
-							continue;
+                        if (empty($dmgDesc) || $dmgDesc === null) {
+                            continue;
                         }
 
-                        $dmgNode = new Crawler($dmgDesc);
-                        $dmgNode->filter('Schilderung' . $dd)->count() ? $infos['damage_description'][$dd] = $newNode->filter('Schilderung' . $dd)->text() : $infos['damage_description'][$dd] = null;
-                        $dmgNode->filter('Schilderung' . $dd)->count() ? $damageText .= $newNode->filter('Schilderung' . $dd)->text() : $damageText .= null;
+                        try {
+                            $dmgNode = new Crawler($dmgDesc);
+                        } catch (Exception $e) {
+                            throw new GdvException('Node is empty [GDV > Behebungsbeauftragung > PartnerdatenBlock > Schadenhergang]');
+                        }
+                        $dmgNode->filter('Schilderung' . $dd)->count() > 0 ? $infos['damage_description'][$dd] = $newNode->filter('Schilderung' . $dd)->text() : $infos['damage_description'][$dd] = null;
+                        $dmgNode->filter('Schilderung' . $dd)->count() > 0 ? $damageText .= $newNode->filter('Schilderung' . $dd)->text() : $damageText .= null;
                         $dd++;
                     }
 
@@ -301,87 +321,118 @@ class Gdv
             }
 
             /* --> Ordnungsnummer */
-            $job->setReferenceNo($this->crawler->filter('GDV > Vorsatz > Absender > Abs-OrdNr-DLP')->text());
+            $xmlRefNoNode = $this->crawler->filter('GDV > Vorsatz > Absender > Abs-OrdNr-DLP');
+            $xmlRefNoValue = $xmlRefNoNode->count() > 0 ? $xmlRefNoNode->text() : $defaultText;
+            $job->setReferenceNo($xmlRefNoValue);
 
             /* --> Abs-DLNR */
-            $job->setDlNo($this->crawler->filter('GDV > Vorsatz > Absender > Abs-DLNR')->text());
+            $xmlDlNoNode = $this->crawler->filter('GDV > Vorsatz > Absender > Abs-DLNR');
+            $xmlDlNoValue = $xmlDlNoNode->count() > 0 ? $xmlDlNoNode->text() : $defaultText;
+            $job->setDlNo($xmlDlNoValue);
 
             /* --> Abs-DLPNR */
-            $job->setDlpNo($this->crawler->filter('GDV > Vorsatz > Absender > Abs-DLPNR')->text());
+            $xmlDlpNoNode = $this->crawler->filter('GDV > Vorsatz > Absender > Abs-DLPNR');
+            $xmlDlpNoValue = $xmlDlpNoNode->count() > 0 ? $xmlDlpNoNode->text() : $defaultText;
+            $job->setDlpNo($xmlDlpNoValue);
 
             /* --> Schaden-Nr */
-            $job->setInsuranceDamageNo($this->crawler->filter('GDV > Behebungsbeauftragung > Header > Schaden-Nr')->text());
+            $xmlInsDmgNoNode = $this->crawler->filter('GDV > Behebungsbeauftragung > Header > Schaden-Nr');
+            $xmlInsDmgNoValue = $xmlInsDmgNoNode->count() > 0 ? $xmlInsDmgNoNode->text() : $defaultText;
+            $job->setInsuranceDamageNo($xmlInsDmgNoValue);
 
             /* --> Schadendatum */
-            $dmgDate = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadendatum')->text();
-            $dmgDt = DateTime::createFromFormat('dmY', $dmgDate);
+            $xmlDmgDateNode = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadendatum');
+            $xmlDmgDateValue = $xmlDmgDateNode->count() > 0 ? $xmlDmgDateNode->text() : $defaultDate->format('dmY');
+            $dmgDt = DateTime::createFromFormat('dmY', $xmlDmgDateValue);
             if ($dmgDt === false) {
-                throw new GdvException('Could not convert DamageDate: ' . $dmgDate);
+                throw new GdvException('Could not convert DamageDate: ' . $xmlDmgDateValue);
             }
             $job->setInsuranceDamageDate($dmgDt);
 
             /* --> Schadenmeldedatum */
-            $reportDate = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadenmeldedatum')->text();
-            $reportDt = DateTime::createFromFormat('dmY', $reportDate);
+            $xmlReportDateNode = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadenmeldedatum');
+            $xmlReportDateValue = $xmlReportDateNode->count() > 0 ? $xmlReportDateNode->text() : $defaultDate->format('dmY');
+            $reportDt = DateTime::createFromFormat('dmY', $xmlReportDateValue);
             if ($reportDt === false) {
-                throw new GdvException('Could not convert ReportDate: ' . $reportDate);
+                throw new GdvException('Could not convert ReportDate: ' . $xmlReportDateValue);
             }
             $job->setInsuranceDamageDateReport($reportDt);
 
             /* --> Versicherungsschein-Nr */
-            $job->setInsuranceContractNo($this->crawler->filter('GDV > Behebungsbeauftragung > Header > Versicherungsschein-Nr')->text());
+            $xmlInsContractNoNode = $this->crawler->filter('GDV > Behebungsbeauftragung > Header > Versicherungsschein-Nr');
+            $xmlInsContractNoValue = $xmlInsContractNoNode->count() > 0 ? $xmlInsContractNoNode->text() : $defaultText;
+            $job->setInsuranceContractNo($xmlInsContractNoValue);
 
             /* --> VU-Nr */
-            $job->setInsuranceVuNr($this->crawler->filter('GDV > Behebungsbeauftragung > Header > VU-Nr')->text());
+            $xmlInsVuNoNode = $this->crawler->filter('GDV > Behebungsbeauftragung > Header > VU-Nr');
+            $xmlInsVuNoValue = $xmlInsVuNoNode->count() > 0 ? $xmlInsVuNoNode->text() : $defaultText;
+            $job->setInsuranceVuNr($xmlInsVuNoValue);
 
             /* --> Auftragsbeschreibung */
-            $job->setDamageJob($this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragsbeschreibung')->text());
+            $xmlDmgJobNode = $this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragsbeschreibung');
+            $xmlDmgJobValue = $xmlDmgJobNode->count() > 0 ? $xmlDmgJobNode->text() : $defaultText;
+            $job->setDamageJob($xmlDmgJobValue);
 
-            /* --> Damage Type from AppBundle:Damage */
+            /* @var $damage Damage */
+            $xmlDmgNode = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadenart');
+            $xmlDmgValue = $xmlDmgNode->count() > 0 ? $xmlDmgNode->text() : $defaultText;
             $damage = $this->em->getRepository(Damage::class)->findOneBy(array(
-                'gdv' => $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadenart')->text()
+                'gdv' => $xmlDmgValue
             ));
             $job->setDamage($damage);
 
-            /* --> Area Type from AppBundle:Area */
+            /* @var $area Area */
+            $xmlAreaNode = $this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > BetroffenerBereich');
+            $xmlAreaValue = $xmlAreaNode->count() > 0 ? $xmlAreaNode->text() : $defaultText;
             $area = $this->em->getRepository(Area::class)->findOneBy(array(
-                'gdv' => ltrim($this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > BetroffenerBereich')->text(), '0')
+                'gdv' => ltrim($xmlAreaValue, '0')
             ));
             $job->setArea($area);
 
             /* --> Action Type from AppBundle:Action NOT READY, MULTIPLE ACTIONS POSSIBLE!!!!!! */
             $aa = 1;
             $actionText = null;
-            foreach ($this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragstypen')->children() as $actionType) {
+            $xmlJobTypeNode = $this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragstypen');
+            $xmlJobTypeValues = $xmlJobTypeNode->count() > 0 ? $xmlJobTypeNode->children() : null;
+            if ($xmlJobTypeValues !== null) {
+                foreach ($xmlJobTypeValues as $actionType) {
 
-            	if(empty($actionType) || $actionType === null){
-            		continue;
-				}
-
-                $actionNode = new Crawler($actionType);
-                if ($actionNode->filter('Auftragsart' . $aa)->count()) {
-
-                    $auftragsart = ltrim($this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragstypen > Auftragsart' . $aa)->text(), '0');
-
-                    $action = $this->em->getRepository(Action::class)->findOneBy(array(
-                        'gdv' => $auftragsart,
-                    ));
-
-                    if ($action === null) {
-                        throw new GdvException('Could not find Action: ' . $auftragsart);
+                    if (empty($actionType) || $actionType === null) {
+                        continue;
                     }
 
-                    $action->addJob($job);
-                    $job->addAction($action);
-                    $this->em->persist($action);
-                    $actionText .= $action->getText() . " ";
+                    try {
+                        $actionNode = new Crawler($actionType);
+                    } catch (Exception $e) {
+                        throw new GdvException('Node is empty [GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragstypen]');
+                    }
+                    if ($actionNode->filter('Auftragsart' . $aa)->count()) {
+
+                        $auftragsart = ltrim($this->crawler->filter('GDV > Behebungsbeauftragung > Behebungsauftrag > Auftragstypen > Auftragsart' . $aa)->text(), '0');
+
+                        /* @var $action Action */
+                        $action = $this->em->getRepository(Action::class)->findOneBy(array(
+                            'gdv' => $auftragsart,
+                        ));
+
+                        if ($action === null) {
+                            throw new GdvException('Could not find Action: ' . $auftragsart);
+                        }
+
+                        $action->addJob($job);
+                        $job->addAction($action);
+                        $this->em->persist($action);
+                        $actionText .= $action->getText() . " ";
+                    }
+                    $aa++;
                 }
-                $aa++;
             }
 
 
-            /* --> Contract Type from AppBundle:Contract */
-            $contractType = ltrim($this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadensparte')->text(), '0');
+            /* @var $contract Contract */
+            $xmlContractTypeNode = $this->crawler->filter('GDV > Behebungsbeauftragung > AllgemeineSchadendaten > Schadensparte');
+            $xmlContractTypeValue = $xmlContractTypeNode->count() > 0 ? $xmlContractTypeNode->text() : $defaultText;
+            $contractType = ltrim($xmlContractTypeValue, '0');
             $contract = $this->em->getRepository(Contract::class)->findOneBy(array(
                 'gdv' => $contractType
             ));
@@ -394,8 +445,7 @@ class Gdv
 
             /* --> Crypt Plain and to Send */
             $sc = new SimpleCrypt('brasa', 'tw');
-            $crypt = $this->crawler->filter('GDV > Behebungsbeauftragung > Header > Schaden-Nr')->text();
-            $cryptSend = $sc->encrypt($crypt);
+            $cryptSend = $sc->encrypt($xmlInsDmgNoValue);
 
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone('Europe/Berlin'));
@@ -411,7 +461,7 @@ class Gdv
                 $html = $this->twig->render(
                     'email/newJob.html.twig', array(
                     'sentAt' => new DateTime(),
-                    'damageNo' => $this->crawler->filter('GDV > Behebungsbeauftragung > Header > Schaden-Nr')->text(),
+                    'damageNo' => $xmlInsDmgNoValue,
                     'damageText' => $damageText,
                     'damageAddress' => $damageAddress,
                     'actionText' => $actionText,
@@ -536,8 +586,8 @@ class Gdv
                 ->setBcc('tow.berlin@gmail.com')
                 ->setBody($html, 'text/html');
 
-            if($has_attachment){
-                $message->attach(Swift_Attachment::fromPath('tmp/'.$f_full));
+            if ($has_attachment) {
+                $message->attach(Swift_Attachment::fromPath('tmp/' . $f_full));
             }
 
             if ($this->mailer->send($message) > 0) {
