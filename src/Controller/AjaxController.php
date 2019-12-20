@@ -10,7 +10,7 @@ use App\Util\Converter\ConverterException;
 use App\Util\Gdv\Gdv;
 use App\Util\Gdv\GdvException;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManagerInterface as ObjectManager;
 use Exception;
 use primus852\ShortResponse\ShortResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -30,7 +30,7 @@ class AjaxController extends AbstractController
      * @param ManagerRegistry $em
      * @return JsonResponse
      */
-    public function createManual(Request $request, \Doctrine\Common\Persistence\ManagerRegistry $em)
+    public function createManual(Request $request, ObjectManager $em)
     {
 
         /**
@@ -66,7 +66,7 @@ class AjaxController extends AbstractController
      * @param ManagerRegistry $em
      * @return JsonResponse
      */
-    public function createReceipt(Request $request, \Doctrine\Common\Persistence\ManagerRegistry $em)
+    public function createReceipt(Request $request, ObjectManager $em)
     {
 
         if($request->get('id') === '' || $request->get('id') === null){
@@ -103,7 +103,7 @@ class AjaxController extends AbstractController
      * @return JsonResponse
      * @throws Exception
      */
-    public function uploadFile(Request $request, \Doctrine\Common\Persistence\ManagerRegistry $em)
+    public function uploadFile(Request $request, ObjectManager $em)
     {
 
         $file = $request->files->get('fileName');
